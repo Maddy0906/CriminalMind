@@ -2,8 +2,10 @@ package com.derrick.park.criminalmind;
 
 import android.content.Context;
 
+import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.UUID;
 
 /**
@@ -30,6 +32,9 @@ public class CrimeLab {
             crime.setSolved(i % 2 == 0);
             crime.setmRequiresPolice(i % 2 == 0); // EVERY SECOND CRIME WILL BE SERIOUS
             mCrimes.add(crime);
+
+            //Dateformat
+            crime.setDate(DateFormat.getDateInstance(DateFormat.MEDIUM, Locale.CANADA));
         }
     }
 

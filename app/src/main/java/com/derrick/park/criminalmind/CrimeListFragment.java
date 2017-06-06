@@ -14,7 +14,7 @@ import android.widget.Toast;
 
 import java.util.List;
 
-import static com.derrick.park.criminalmind.R.drawable.ic_solved;
+import static com.derrick.park.criminalmind.R.drawable;
 
 /**
  * Created by park on 2017-06-01.
@@ -45,7 +45,7 @@ public class CrimeListFragment extends Fragment {
         //Initialized
         private final TextView mTitleTextView;
         private final TextView mDateTextView;
-//        private final ImageView mSolvedImage;
+        private final ImageView mSolvedImage;
         private Crime mCrime;
 
 
@@ -54,7 +54,7 @@ public class CrimeListFragment extends Fragment {
             super(itemView);
             mTitleTextView = (TextView) itemView.findViewById(R.id.crime_title);
             mDateTextView = (TextView) itemView.findViewById(R.id.crime_date);
-//            mSolvedImage = (ImageView) itemView.findViewById(R.id.crime_solved);
+            mSolvedImage = (ImageView) itemView.findViewById(R.id.crime_solved);
         }
 
         public void bindCrime(final Crime crime) {
@@ -70,12 +70,11 @@ public class CrimeListFragment extends Fragment {
                 }
             }));
 
-//            //put images
-//            if (crime.isSolved() == true) {
-//                mSolvedImage.setImageResource(ic_solved);
-//            }
+            //put images
+            if (crime.isSolved() == true) {
+                mSolvedImage.setImageResource(drawable.ic_solved);
+            }
         }
-
 
     }
 
