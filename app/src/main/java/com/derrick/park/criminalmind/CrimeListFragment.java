@@ -1,5 +1,6 @@
 package com.derrick.park.criminalmind;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
@@ -10,7 +11,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import java.util.List;
 
@@ -24,6 +24,7 @@ public class CrimeListFragment extends Fragment {
 
     private RecyclerView mCrimeRecyclerView;
     private CrimeAdapter mAdater;
+    public static final String EXTRA_CRIME_ID = "criminalintent.CRIME_ID";
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -55,18 +56,20 @@ public class CrimeListFragment extends Fragment {
             mTitleTextView = (TextView) itemView.findViewById(R.id.crime_title);
             mDateTextView = (TextView) itemView.findViewById(R.id.crime_date);
             mSolvedImage = (ImageView) itemView.findViewById(R.id.crime_solved);
+
         }
 
         public void bindCrime(final Crime crime) {
             mCrime = crime;
-            mTitleTextView.setText(crime.getTitle());
+            mTitleTextView.setText(mCrime.getTitle());
             mDateTextView.setText(crime.getDate().toString());
 
-            //Toast
+
             itemView.setOnClickListener((new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    Toast.makeText(v.getContext(), "Crime number: " + crime.getTitle(), Toast.LENGTH_SHORT).show();
+                    Intent intent = CrimeActivity.newIntent(getActivity(), mCrime.getId());
+                    startActivity(intent);
                 }
             }));
 

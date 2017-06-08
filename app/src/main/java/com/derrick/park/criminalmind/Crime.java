@@ -43,9 +43,9 @@ public class Crime {
         mTitle = title;
     }
 
-//    public void setDate(Date date) {
-//        mDate = date;
-//    }
+    public void setDate(Date date) {
+        mDate = date;
+    }
 
     public void setSolved(boolean solved) {
         mSolved = solved;
@@ -59,7 +59,4 @@ public class Crime {
         this.mRequiresPolice = mRequiresPolice;
     }
 
-    public void setDate(DateFormat dateInstance) {
-
-    }
 }

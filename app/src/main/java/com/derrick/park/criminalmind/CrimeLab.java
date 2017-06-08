@@ -24,6 +24,7 @@ public class CrimeLab {
         return sCrimeLab;
     }
 
+
     private CrimeLab(Context context) {
         mCrimes = new ArrayList<>();
         for(int i = 0; i < 100; i++) {
@@ -33,8 +34,6 @@ public class CrimeLab {
             crime.setmRequiresPolice(i % 2 == 0); // EVERY SECOND CRIME WILL BE SERIOUS
             mCrimes.add(crime);
 
-            //Dateformat
-            crime.setDate(DateFormat.getDateInstance(DateFormat.MEDIUM, Locale.CANADA));
         }
     }
 
