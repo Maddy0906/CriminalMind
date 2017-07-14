@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Mente criminal</string>
+    <string name="crime_title_hint">Ingrese un título para el crimen.</string>
+    <string name="crime_title_label">Título</string>
+    <string name="crime_details_label">Detalles</string>
+    <string name="crime_solved_label">Resuelto</string>
+    <string name="date_picker_title">Fecha del delito:</string>
+
+    <string name="crime_suspect_text">Elegir sospechoso</string>
+    <string name="crime_suspect">El nombre sospechoso es% 1 $ s</string>
+
+    <string name="crime_report_text">Enviar informe de crimen</string>
+    <string name="crime_report">%1$s!
+    The Crime was discovered on %2$s. %3$s, and %4$s</string>
+    <string name="crime_report_solved">El caso se resuelve</string>
+    <string name="crime_report_unsolved">El caso no se resuelve</string>
+    <string name="crime_report_no_suspect">No hay sospechoso</string>
+    <string name="crime_report_suspect">El sospechoso es% s</string>
+    <string name="send_report">Enviar informe de crimen a través de</string>
+
+    <!--add button on menu-->
+    <string name="new_crime">Nuevo crimen</string>
+    <string name="show_subtitle">Mostrar subtítulos</string>
+    <string name="hide_subtitle">Ocultar subtítulos</string>
+    <string name="subtitle_format">% 1 $ d los delitos</string>
+    <!--delete button on menu-->
+    <string name="delete_crime">Eliminar delito</string>
+
+    <!---->
+    <plurals name="subtitle_plural">
+        <item quantity="one">%1$d crime</item>
+        <item quantity="other">%1$d crimes</item>
+    </plurals>
+
+    <!--display message if no date-->
+    <string name="empty">No hay crímenes.</string>
+    <string name="crime_report_subject">Mente criminal Informe sobre delitos</string>
+
+</resources>

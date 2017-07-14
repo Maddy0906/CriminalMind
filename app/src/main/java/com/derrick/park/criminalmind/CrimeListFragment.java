@@ -1,20 +1,25 @@
 package com.derrick.park.criminalmind;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
+import android.support.v7.widget.helper.ItemTouchHelper;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
-
 import java.util.List;
 
-import static com.derrick.park.criminalmind.R.drawable;
+import static android.R.id.empty;
 
 /**
  * Created by park on 2017-06-01.
@@ -24,59 +29,176 @@ public class CrimeListFragment extends Fragment {
 
     private RecyclerView mCrimeRecyclerView;
     private CrimeAdapter mAdater;
-    public static final String EXTRA_CRIME_ID = "criminalintent.CRIME_ID";
+    private int mLastAdapterClickedPosition = -1;
+    //for tablet
+    private Callbacks mCallbacks;
+    //hide
+    private boolean mSubtitleVisible;
+
+    private static final String SAVED_SUBTITLE_VISIBLE = "subtitle";
+
+    //for tablet call data
+    public interface Callbacks{
+        void onCrimeSelected(Crime crime);
+    }
+
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        mCallbacks = (Callbacks) context;
+    }
+
+    @Override
+    public void onDetach() {
+        super.onDetach();
+        mCallbacks = null;
+    }
+
+    //to include menu
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setHasOptionsMenu(true);
+
+    }
+
+
+    //add menu to fragment
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater){
+        super.onCreateOptionsMenu(menu,inflater);
+        inflater.inflate(R.menu.fragment_crime_list,menu);
+        MenuItem subtitleItem = menu.findItem(R.id.show_subtitle);
+        if (mSubtitleVisible){
+            subtitleItem.setTitle(R.string.hide_subtitle);
+        }else {
+            subtitleItem.setTitle(R.string.show_subtitle);
+        }
+
+    }
+
+
+    //add menu action
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()){
+            case R.id.new_crime:
+                Crime crime = new Crime();
+                CrimeLab.get(getActivity()).addCrime(crime);
+//                Intent intent = CrimePagerActivity.newIntent(getActivity(),crime.getId());
+//                startActivity(intent);
+
+                //for tablet
+                updateUI();
+                mCallbacks.onCrimeSelected(crime);
+
+                return true;
+            case R.id.show_subtitle:
+                mSubtitleVisible = !mSubtitleVisible;
+                getActivity().invalidateOptionsMenu();
+                updateSubtitle();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
+
+    //show subtitle
+    private void updateSubtitle(){
+        CrimeLab crimeLab = CrimeLab.get(getActivity());
+        int crimeCount = crimeLab.getCrimes().size();
+        //count crime to crimes
+        String subtitle = getResources().getQuantityString(R.plurals.subtitle_plural,crimeCount, crimeCount);
+
+        //switch
+        if (!mSubtitleVisible){
+            subtitle = null;
+        }
+
+        AppCompatActivity activity = (AppCompatActivity) getActivity();
+        activity.getSupportActionBar().setSubtitle(subtitle);
+    }
+
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        updateUI();
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_crime_list, container, false);
         mCrimeRecyclerView = (RecyclerView) view.findViewById(R.id.crime_recycler_view);
         mCrimeRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+        if (savedInstanceState != null){
+            mSubtitleVisible = savedInstanceState.getBoolean(SAVED_SUBTITLE_VISIBLE);
+        }
+
         updateUI();
         return view;
     }
 
-    private void updateUI() {
+
+    public void updateUI() {
         CrimeLab crimeLab = CrimeLab.get(getActivity());
         List<Crime> crimes = crimeLab.getCrimes();
-        mAdater = new CrimeAdapter(crimes);
-        mCrimeRecyclerView.setAdapter(mAdater);
+        if (mAdater == null) {
+            mAdater = new CrimeAdapter(crimes);
+            mCrimeRecyclerView.setAdapter(mAdater);
+        } else {
+            if (mLastAdapterClickedPosition < 0) {
+                mAdater.notifyDataSetChanged();
+            } else {
+                mAdater.notifyItemChanged(mLastAdapterClickedPosition);
+                mLastAdapterClickedPosition = -1;
+            }
+
+            mAdater.setCrimes(crimes);
+            mAdater.notifyDataSetChanged();
+        }
+        //keep update
+        updateSubtitle();
+
     }
 
-    private class CrimeHolder extends RecyclerView.ViewHolder {
-        //Initialized
-        private final TextView mTitleTextView;
-        private final TextView mDateTextView;
-        private final ImageView mSolvedImage;
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putBoolean(SAVED_SUBTITLE_VISIBLE, mSubtitleVisible);
+    }
+
+    private class CrimeHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+        private TextView mTitleTextView;
+        private TextView mDateTextView;
+        private ImageView mSolvedImageView;
+
         private Crime mCrime;
 
+        public CrimeHolder(LayoutInflater inflater, ViewGroup parent) {
+            super(inflater.inflate(R.layout.list_item_crime, parent, false));
 
-        //set textView
-        public CrimeHolder(View itemView) {
-            super(itemView);
+            itemView.setOnClickListener(this);
             mTitleTextView = (TextView) itemView.findViewById(R.id.crime_title);
             mDateTextView = (TextView) itemView.findViewById(R.id.crime_date);
-            mSolvedImage = (ImageView) itemView.findViewById(R.id.crime_solved);
+            mSolvedImageView = (ImageView) itemView.findViewById(R.id.crime_solved);
 
         }
 
-        public void bindCrime(final Crime crime) {
+        @Override
+        public void onClick(View v) {
+            mLastAdapterClickedPosition = getAdapterPosition();
+//            Intent intent = CrimePagerActivity.newIntent(getActivity(), mCrime.getId());
+//            startActivity(intent);
+            //for tablet
+            mCallbacks.onCrimeSelected(mCrime);
+        }
+
+        public void bind(Crime crime) {
             mCrime = crime;
             mTitleTextView.setText(mCrime.getTitle());
-            mDateTextView.setText(crime.getDate().toString());
-
-
-            itemView.setOnClickListener((new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    Intent intent = CrimeActivity.newIntent(getActivity(), mCrime.getId());
-                    startActivity(intent);
-                }
-            }));
-
-            //put images
-            if (crime.isSolved() == true) {
-                mSolvedImage.setImageResource(drawable.ic_solved);
-            }
+            mDateTextView.setText(mCrime.getDate().toString());
+            mSolvedImageView.setVisibility(mCrime.isSolved() ? View.VISIBLE : View.GONE);
         }
 
     }
@@ -88,40 +210,28 @@ public class CrimeListFragment extends Fragment {
             mCrimes = crimes;
         }
 
-        //MARK 2 DIFFERENT VIEWS WITH O AND 1:
-        @Override
-        public int getItemViewType (int index){
-
-            if (mCrimes.get(index).ismRequiresPolice() == true) {
-                return 0;
-            } else {
-                return 1;
-            }
-        }
-
         @Override
         public CrimeHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-            // INFLATING ONE HOLDER WITH 2 DIFFERENT VIEWS 0 OR 1 FROM THE METHOD ABOVE:
-            View view = null;
-            if (viewType == 0) {
-                view = LayoutInflater.from(getActivity()).inflate(R.layout.list_item_crime, parent, false);// OLD VIEW
-            } else if (viewType == 1) {
-                view = LayoutInflater.from(getActivity()).inflate(R.layout.list_item_serious_crime, parent, false); // NEW VIEW WITH BUTTONS
-            }
-            return new CrimeHolder(view);
+            LayoutInflater layoutInflater = LayoutInflater.from(getActivity());
+            return new CrimeHolder(layoutInflater, parent);
         }
 
         @Override
         public void onBindViewHolder(CrimeHolder holder, int position) {
-            // assignment
             Crime crime = mCrimes.get(position);
-            holder.bindCrime(crime);
+            holder.bind(crime);
         }
+
 
         @Override
         public int getItemCount() {
             return mCrimes.size();
         }
 
+        public void setCrimes(List<Crime> crimes){
+            mCrimes = crimes;
+
+        }
     }
+
 }

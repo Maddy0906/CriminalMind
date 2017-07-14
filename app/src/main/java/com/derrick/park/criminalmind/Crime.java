@@ -1,6 +1,5 @@
 package com.derrick.park.criminalmind;
 
-import java.text.DateFormat;
 import java.util.Date;
 import java.util.UUID;
 
@@ -15,11 +14,17 @@ public class Crime {
     private String mTitle;
     private Date mDate;
     private boolean mSolved;
-    private boolean mRequiresPolice; // ADDIND ONE MORE PROPERTY + GETTER & SETTER
+    private String mSuspect;
+
+//    private boolean mPoliceRequired;
 
 
     public Crime() {
-        mId = UUID.randomUUID();
+        this(UUID.randomUUID());
+    }
+
+    public Crime(UUID id){
+        mId = id;
         mDate = new Date();
     }
 
@@ -51,12 +56,18 @@ public class Crime {
         mSolved = solved;
     }
 
-    public boolean ismRequiresPolice() {
-        return mRequiresPolice;
+
+    public String getSuspect() {
+        return mSuspect;
     }
 
-    public void setmRequiresPolice(boolean mRequiresPolice) {
-        this.mRequiresPolice = mRequiresPolice;
+    public void setSuspect(String mSuspect) {
+        this.mSuspect = mSuspect;
     }
+
+    public String getPhotoFilename(){
+        return "IMG_" + getId().toString() + ".jpg";
+    }
+
 
 }

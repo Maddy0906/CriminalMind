@@ -6,12 +6,11 @@ import android.support.v4.app.Fragment;
 
 import java.util.UUID;
 
-import static com.derrick.park.criminalmind.CrimeListFragment.EXTRA_CRIME_ID;
-
 public class CrimeActivity extends SingleFragmentActivity {
 
+    public static final String EXTRA_CRIME_ID = "com.derrick.park.criminalmind.crime_id";
 
-    public  static Intent newIntent(Context context, UUID crimeId){
+    public static Intent newIntent(Context context, UUID crimeId) {
         Intent intent = new Intent(context, CrimeActivity.class);
         intent.putExtra(EXTRA_CRIME_ID, crimeId);
         return intent;
@@ -19,7 +18,7 @@ public class CrimeActivity extends SingleFragmentActivity {
 
     @Override
     protected Fragment createFragment() {
-        UUID crimeId = (UUID)getIntent().getSerializableExtra(CrimeFragment.EXTRA_CRIME_ID);
+        UUID crimeId = (UUID) getIntent().getSerializableExtra(EXTRA_CRIME_ID);
         return CrimeFragment.newInstance(crimeId);
     }
 
